@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Free Landscaping Estimate</title>
+  <title>Free Instant Estimate</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -66,50 +66,100 @@
       padding: 48px 20px 80px;
     }
 
-    /* ── HEADER ── */
-    header {
-      text-align: center;
-      margin-bottom: 48px;
+    /* ── STEPPER ── */
+    .stepper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 40px;
     }
 
-    .badge {
-      display: inline-block;
-      background: rgba(65,105,225,0.12);
-      border: 1px solid rgba(65,105,225,0.3);
-      color: var(--blue);
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      padding: 6px 16px;
-      border-radius: 100px;
-      margin-bottom: 24px;
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    h1 {
-      font-size: clamp(28px, 5vw, 42px);
-      font-weight: 800;
-      line-height: 1.15;
-      margin-bottom: 16px;
-      color: var(--text);
-    }
-
-    h1 span {
-      background: linear-gradient(90deg, var(--blue), var(--cyan));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .sub {
-      font-size: 16px;
+    .step-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: var(--bg-card);
       color: var(--text-muted);
-      line-height: 1.6;
-      max-width: 500px;
-      margin: 0 auto;
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      flex-shrink: 0;
     }
 
-    /* ── FORM CARD ── */
+    .step-item.active .step-circle {
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      border-color: transparent;
+      color: #fff;
+    }
+
+    .step-item.done .step-circle {
+      background: var(--blue);
+      border-color: transparent;
+      color: #fff;
+    }
+
+    .step-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: color 0.3s;
+    }
+
+    .step-item.active .step-label { color: var(--text); }
+    .step-item.done .step-label { color: var(--blue); }
+
+    .step-line {
+      flex: 1;
+      height: 2px;
+      background: var(--border);
+      margin: 0 12px;
+      min-width: 40px;
+      transition: background 0.3s;
+    }
+
+    .step-line.done { background: var(--blue); }
+
+    /* ── INDUSTRY TABS ── */
+    .industry-tabs {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+
+    .industry-tab {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 22px;
+      border-radius: 100px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+
+    .industry-tab:hover { border-color: var(--blue); color: var(--blue); }
+    .industry-tab.active {
+      background: linear-gradient(90deg, var(--blue), var(--cyan));
+      border-color: transparent;
+      color: #ffffff;
+    }
+
+    /* ── CARD ── */
     .card {
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -118,6 +168,30 @@
       transition: background 0.3s, border-color 0.3s;
     }
 
+    .card-eyebrow {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 12px;
+    }
+
+    .card h2 {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .card .card-sub {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+
+    /* ── FORM FIELDS ── */
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -133,16 +207,14 @@
     .field.full { grid-column: 1 / -1; }
 
     label {
-      font-size: 13px;
-      font-weight: 600;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
       color: var(--text-label);
-      letter-spacing: 0.3px;
     }
 
-    label span {
-      color: var(--blue);
-      margin-left: 2px;
-    }
+    label span { color: var(--blue); margin-left: 2px; }
 
     input, select, textarea {
       background: var(--bg-input);
@@ -162,6 +234,142 @@
     input:focus, select:focus, textarea:focus { border-color: var(--blue); }
     textarea { resize: vertical; min-height: 110px; }
 
+    /* ── PRICING TABLE ── */
+    .pricing-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      color: var(--blue);
+      font-size: 14px;
+      font-weight: 600;
+      margin: 20px 0 0;
+      user-select: none;
+      background: none;
+      border: none;
+      font-family: inherit;
+      padding: 0;
+    }
+
+    .pricing-toggle:hover { opacity: 0.8; }
+
+    .pricing-arrow { transition: transform 0.2s; font-size: 10px; }
+    .pricing-arrow.open { transform: rotate(90deg); }
+
+    .pricing-table {
+      display: none;
+      margin-top: 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .pricing-table.open { display: block; }
+
+    .pricing-table-header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      padding: 10px 16px;
+      background: var(--bg-input);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .pricing-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      gap: 16px;
+    }
+
+    .pricing-row:last-child { border-bottom: none; }
+
+    .pricing-service-name {
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .pricing-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pricing-input-wrap span {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .pricing-input {
+      width: 80px;
+      padding: 6px 10px;
+      font-size: 14px;
+      border-radius: 8px;
+      text-align: right;
+    }
+
+    /* ── CHECKBOX ── */
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--blue);
+      cursor: pointer;
+      flex-shrink: 0;
+      padding: 0;
+      border-radius: 4px;
+    }
+
+    .checkbox-row span {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      user-select: none;
+    }
+
+    /* ── COPY TOGGLE ── */
+    .copy-toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 4px;
+      cursor: pointer;
+    }
+
+    .copy-toggle input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--blue);
+      cursor: pointer;
+      flex-shrink: 0;
+      padding: 0;
+      border-radius: 4px;
+    }
+
+    .copy-toggle span {
+      font-size: 14px;
+      color: var(--text-muted);
+      user-select: none;
+    }
+
+    #owner-email-field { display: none; margin-top: 12px; }
+
+    /* ── BUTTONS ── */
     .submit-btn {
       width: 100%;
       padding: 16px;
@@ -181,8 +389,23 @@
     .submit-btn:active { transform: translateY(0); }
     .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-    /* ── STATES ── */
-    #loading-state, #success-state { display: none; }
+    .back-link {
+      display: inline-block;
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-decoration: underline;
+      background: none;
+      border: none;
+      font-family: inherit;
+      padding: 0;
+    }
+
+    .back-link:hover { color: var(--text); }
+
+    /* ── LOADING ── */
+    #loading-state { display: none; }
 
     .loader-wrap {
       text-align: center;
@@ -200,7 +423,6 @@
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
-
     .loader-wrap p { color: var(--text-muted); font-size: 15px; }
     .loader-wrap strong { color: var(--text); }
 
@@ -301,10 +523,7 @@
     body.dark .error-msg { color: #fc8181; }
 
     /* ── FOOTER ── */
-    footer {
-      text-align: center;
-      margin-top: 40px;
-    }
+    footer { text-align: center; margin-top: 40px; }
 
     .theme-toggle {
       background: transparent;
@@ -319,162 +538,171 @@
       margin-bottom: 16px;
     }
 
-    .theme-toggle:hover {
-      border-color: var(--blue);
-      color: var(--blue);
-    }
+    .theme-toggle:hover { border-color: var(--blue); color: var(--blue); }
 
-    .powered {
-      font-size: 12px;
-      color: var(--footer-text);
-    }
-
-    .powered span {
-      color: var(--blue);
-      font-weight: 600;
-    }
-
-    /* ── COPY TOGGLE ── */
-    .copy-toggle {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 4px;
-      cursor: pointer;
-    }
-
-    .copy-toggle input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      accent-color: var(--blue);
-      cursor: pointer;
-      flex-shrink: 0;
-      padding: 0;
-      border-radius: 4px;
-    }
-
-    .copy-toggle span {
-      font-size: 14px;
-      color: var(--text-muted);
-      user-select: none;
-    }
-
-    #owner-email-field {
-      display: none;
-      margin-top: 12px;
-    }
+    .powered { font-size: 12px; color: var(--footer-text); }
+    .powered span { color: var(--blue); font-weight: 600; }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 520px) {
       .card { padding: 24px 20px; }
       .form-grid { grid-template-columns: 1fr; }
       .field.full { grid-column: 1; }
+      .step-label { display: none; }
     }
   </style>
 </head>
 <body>
   <div class="page-wrap">
 
-    <header>
-      <div class="badge">Free · Instant · No Obligation</div>
-      <h1>Send a free<br><span>landscaping estimate</span><br>in seconds</h1>
-      <p class="sub">Fill in the details below and we'll send a professional estimate straight to your customer's inbox and a copy of it to yours! Just check off send a copy.</p>
-    </header>
-
-    <div class="card">
-
-      <!-- FORM -->
-      <div id="form-state">
-        <form id="estimate-form">
-          <div class="form-grid">
-
-            <div class="field">
-              <label>Your Name <span>*</span></label>
-              <input type="text" id="name" placeholder="John Smith" required />
-            </div>
-
-            <div class="field">
-              <label>Email Address <span>*</span></label>
-              <input type="email" id="email" placeholder="john@example.com" required />
-            </div>
-
-            <div class="field full">
-              <label>Job Type <span>*</span></label>
-              <select id="job_type" required>
-                <option value="" disabled selected>Select a service...</option>
-                <option>Lawn Mowing & Maintenance</option>
-                <option>Garden Design & Planting</option>
-                <option>Hedge & Shrub Trimming</option>
-                <option>Tree Services & Removal</option>
-                <option>Irrigation & Drainage</option>
-                <option>Hardscaping (Patios, Walkways, Walls)</option>
-                <option>Mulching & Ground Cover</option>
-                <option>Lawn Restoration & Seeding</option>
-                <option>Landscape Lighting</option>
-                <option>Snow Removal</option>
-                <option>General Cleanup & Yard Waste Removal</option>
-                <option>Commercial Landscaping</option>
-                <option>Full Property Makeover</option>
-                <option>Other</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label>Property Size</label>
-              <select id="property_size">
-                <option value="" disabled selected>Select size...</option>
-                <option>Small (under 2,500 sq ft)</option>
-                <option>Medium (2,500 – 7,500 sq ft)</option>
-                <option>Large (7,500 – 15,000 sq ft)</option>
-                <option>Extra Large (15,000+ sq ft)</option>
-                <option>Commercial Property</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label>Location (City / Zip)</label>
-              <input type="text" id="location" placeholder="e.g. Austin, TX" />
-            </div>
-
-            <div class="field full">
-              <label>Describe the Job <span>*</span></label>
-              <textarea id="description" placeholder="Tell us what you need done. The more detail the better — current state of the yard, specific areas, any preferences, etc." required></textarea>
-            </div>
-
-          </div>
-
-          <div class="field full" style="margin-top: 8px;">
-            <label class="copy-toggle">
-              <input type="checkbox" id="send-copy" onchange="toggleOwnerEmail()" />
-              <span>Send a copy of this estimate to my email</span>
-            </label>
-            <div id="owner-email-field">
-              <input type="email" id="owner_email" placeholder="Your email address" style="margin-top:0;" />
-            </div>
-          </div>
-
-          <button type="submit" class="submit-btn" id="submit-btn">
-            Get My Free Estimate →
-          </button>
-          <div class="error-msg" id="error-msg"></div>
-        </form>
+    <!-- STEPPER -->
+    <div class="stepper">
+      <div class="step-item active" id="step-ind-1">
+        <div class="step-circle">1</div>
+        <div class="step-label">Configure</div>
       </div>
+      <div class="step-line" id="line-1"></div>
+      <div class="step-item" id="step-ind-2">
+        <div class="step-circle">2</div>
+        <div class="step-label">Get Quote</div>
+      </div>
+      <div class="step-line" id="line-2"></div>
+      <div class="step-item" id="step-ind-3">
+        <div class="step-circle">3</div>
+        <div class="step-label">Estimate</div>
+      </div>
+    </div>
 
-      <!-- LOADING -->
-      <div id="loading-state">
-        <div class="loader-wrap">
-          <div class="spinner"></div>
-          <p><strong>Generating your estimate...</strong></p>
-          <p>Our AI is calculating the scope and pricing.<br>This takes about 10 seconds.</p>
+    <!-- INDUSTRY TABS -->
+    <div class="industry-tabs">
+      <button class="industry-tab active" onclick="switchIndustry('landscaping', this)">🌿 Landscaping</button>
+      <button class="industry-tab" onclick="switchIndustry('roofing', this)">🏠 Roofing</button>
+      <button class="industry-tab" onclick="switchIndustry('pressure washing', this)">💧 Pressure Washing</button>
+    </div>
+
+    <!-- ── STEP 1: CONFIGURE ── -->
+    <div id="step-1">
+      <div class="card">
+        <div class="card-eyebrow" id="config-eyebrow">FLOCEAN AI — LAWN &amp; LANDSCAPE</div>
+        <h2>Set Up Your Business</h2>
+        <p class="card-sub">Configure once. Your customers get a branded estimator that reads their property from satellite and sends a quote in seconds.</p>
+
+        <div class="form-grid">
+          <div class="field full">
+            <label>Business Name <span>*</span></label>
+            <input type="text" id="business_name" placeholder="Green Lawn Co." />
+          </div>
+          <div class="field full">
+            <label>Your Email (for lead notifications)</label>
+            <input type="email" id="owner_email" placeholder="you@yourbusiness.com" />
+          </div>
         </div>
-      </div>
 
-      <!-- SUCCESS -->
-      <div id="success-state">
+        <button class="pricing-toggle" onclick="togglePricing()">
+          <span class="pricing-arrow" id="pricing-arrow">▶</span>
+          Customize Service Pricing
+        </button>
+
+        <div class="pricing-table" id="pricing-table">
+          <div class="pricing-table-header">
+            <span>Service</span>
+            <span>Min. Charge ($)</span>
+          </div>
+          <div id="pricing-rows"></div>
+        </div>
+
+        <label class="checkbox-row">
+          <input type="checkbox" id="pricing-reviewed" />
+          <span>I've reviewed my service pricing</span>
+        </label>
+
+        <button class="submit-btn" onclick="goToStep2()">Preview Estimator →</button>
+        <div class="error-msg" id="config-error"></div>
+      </div>
+    </div>
+
+    <!-- ── STEP 2: GET QUOTE ── -->
+    <div id="step-2" style="display:none;">
+      <div class="card">
+        <div class="card-eyebrow" id="quote-eyebrow">FLOCEAN AI — LAWN &amp; LANDSCAPE</div>
+        <h2 id="quote-heading">Get an Instant Estimate</h2>
+        <p class="card-sub">Fill in the customer details and we'll generate a professional quote in seconds.</p>
+
+        <div id="form-state">
+          <form id="estimate-form">
+            <div class="form-grid">
+
+              <div class="field">
+                <label>Customer Name <span>*</span></label>
+                <input type="text" id="name" placeholder="John Smith" required />
+              </div>
+
+              <div class="field">
+                <label>Customer Email <span>*</span></label>
+                <input type="email" id="email" placeholder="john@example.com" required />
+              </div>
+
+              <div class="field full">
+                <label id="job-type-label">Job Type <span>*</span></label>
+                <select id="job_type" required>
+                  <option value="" disabled selected>Select a service...</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label id="size-label">Property Size</label>
+                <select id="property_size">
+                  <option value="" disabled selected>Select size...</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>Location (City / Zip)</label>
+                <input type="text" id="location" placeholder="e.g. Austin, TX" />
+              </div>
+
+              <div class="field full">
+                <label>Describe the Job <span>*</span></label>
+                <textarea id="description" placeholder="Tell us what needs to be done. The more detail the better." required></textarea>
+              </div>
+
+            </div>
+
+            <div class="field full" style="margin-top: 8px;">
+              <label class="copy-toggle">
+                <input type="checkbox" id="send-copy" onchange="toggleCustomerCopy()" />
+                <span>Send a copy of this estimate to my email</span>
+              </label>
+              <div id="owner-email-field">
+                <input type="email" id="copy_email" placeholder="Your email address" style="margin-top:0;" />
+              </div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submit-btn">Get My Free Estimate →</button>
+            <div class="error-msg" id="error-msg"></div>
+          </form>
+        </div>
+
+        <!-- LOADING -->
+        <div id="loading-state">
+          <div class="loader-wrap">
+            <div class="spinner"></div>
+            <p><strong>Generating your estimate...</strong></p>
+            <p>Our AI is calculating the scope and pricing.<br>This takes about 10 seconds.</p>
+          </div>
+        </div>
+
+        <button class="back-link" onclick="goToStep1()">← Back to configure</button>
+      </div>
+    </div>
+
+    <!-- ── STEP 3: ESTIMATE SENT ── -->
+    <div id="step-3" style="display:none;">
+      <div class="card">
         <div class="success-wrap">
           <div class="check-circle">✓</div>
           <h2>Estimate Sent!</h2>
-          <p>Your free landscaping estimate has been sent to<br><strong id="confirm-email"></strong></p>
+          <p>Your free <span id="confirm-industry">landscaping</span> estimate has been sent to<br><strong id="confirm-email"></strong></p>
           <p style="margin-bottom:0;">Check your inbox — it should arrive within a minute.</p>
         </div>
         <div class="booking-card">
@@ -484,23 +712,191 @@
             Book Your Free Call →
           </a>
         </div>
-        <span class="restart-link" onclick="resetForm()">← Get another estimate</span>
+        <span class="restart-link" onclick="resetAll()">← Send another estimate</span>
       </div>
-
     </div>
 
     <footer>
       <button class="theme-toggle" onclick="toggleTheme()" id="theme-toggle">Switch to Dark Mode</button>
-      <p class="powered">Powered by <span>Flocean AI</span> &nbsp;·&nbsp; Done-for-you job acquisition for landscaping businesses</p>
+      <p class="powered">Powered by <span>Flocean AI</span> &nbsp;·&nbsp; Done-for-you job acquisition for home service businesses</p>
     </footer>
 
   </div>
 
   <script>
+    /* ── DATA ── */
+    const INDUSTRY_DATA = {
+      landscaping: {
+        eyebrow: 'FLOCEAN AI — LAWN & LANDSCAPE',
+        quoteHeading: 'Get an Instant Lawn Estimate',
+        jobLabel: 'Job Type',
+        sizeLabel: 'Property Size',
+        jobs: [
+          'Lawn Mowing & Maintenance','Garden Design & Planting','Hedge & Shrub Trimming',
+          'Tree Services & Removal','Irrigation & Drainage','Hardscaping (Patios, Walkways, Walls)',
+          'Mulching & Ground Cover','Lawn Restoration & Seeding','Landscape Lighting',
+          'Snow Removal','General Cleanup & Yard Waste Removal','Commercial Landscaping',
+          'Full Property Makeover','Other'
+        ],
+        sizes: [
+          'Small (under 2,500 sq ft)','Medium (2,500 – 7,500 sq ft)',
+          'Large (7,500 – 15,000 sq ft)','Extra Large (15,000+ sq ft)','Commercial Property'
+        ],
+        pricing: [
+          { name: 'Lawn Mowing', value: 40 },
+          { name: 'Edging & Trimming', value: 25 },
+          { name: 'Leaf Cleanup', value: 45 },
+          { name: 'Hedge Trimming', value: 65 },
+          { name: 'Mulching (per bed)', value: 65 },
+          { name: 'Lawn Fertilization', value: 50 },
+          { name: 'Core Aeration', value: 65 },
+        ]
+      },
+      roofing: {
+        eyebrow: 'FLOCEAN AI — ROOFING',
+        quoteHeading: 'Get an Instant Roofing Estimate',
+        jobLabel: 'Service Type',
+        sizeLabel: 'Roof Size',
+        jobs: [
+          'Full Roof Replacement','Partial Roof Repair','Shingle Replacement',
+          'Roof Leak Repair','Flat Roof / Commercial Roofing','Gutter Replacement & Repair',
+          'Emergency Roof Repair','Roof Inspection & Assessment','Skylight Installation','Other'
+        ],
+        sizes: [
+          'Small (under 1,000 sq ft)','Medium (1,000 – 2,000 sq ft)',
+          'Large (2,000 – 3,500 sq ft)','Extra Large (3,500+ sq ft)','Commercial Building'
+        ],
+        pricing: [
+          { name: 'Roof Inspection', value: 150 },
+          { name: 'Shingle Replacement (per square)', value: 350 },
+          { name: 'Leak Repair', value: 300 },
+          { name: 'Full Roof Replacement', value: 8000 },
+          { name: 'Gutter Replacement', value: 600 },
+          { name: 'Emergency Repair', value: 500 },
+          { name: 'Flat Roof / Commercial', value: 10000 },
+        ]
+      },
+      'pressure washing': {
+        eyebrow: 'FLOCEAN AI — PRESSURE WASHING',
+        quoteHeading: 'Get an Instant Pressure Washing Estimate',
+        jobLabel: 'Service Type',
+        sizeLabel: 'Surface Area',
+        jobs: [
+          'Driveway & Walkway Cleaning','House Exterior / Siding Wash','Deck & Patio Cleaning',
+          'Fence Cleaning','Roof Soft Wash','Commercial Building Wash',
+          'Concrete & Garage Floor','Gutter Exterior Cleaning','Pool Deck Cleaning','Other'
+        ],
+        sizes: [
+          'Small (under 500 sq ft)','Medium (500 – 1,500 sq ft)',
+          'Large (1,500 – 3,000 sq ft)','Extra Large (3,000+ sq ft)','Full Property'
+        ],
+        pricing: [
+          { name: 'Driveway & Walkway', value: 80 },
+          { name: 'House Exterior / Siding', value: 150 },
+          { name: 'Deck & Patio', value: 100 },
+          { name: 'Fence Cleaning', value: 75 },
+          { name: 'Roof Soft Wash', value: 200 },
+          { name: 'Commercial Building', value: 300 },
+          { name: 'Concrete & Garage Floor', value: 90 },
+        ]
+      }
+    };
+
+    let currentIndustry = 'landscaping';
+
+    /* ── INDUSTRY SWITCH ── */
+    function switchIndustry(industry, btn) {
+      currentIndustry = industry;
+      const data = INDUSTRY_DATA[industry];
+
+      document.getElementById('config-eyebrow').textContent = data.eyebrow;
+      document.getElementById('quote-eyebrow').textContent = data.eyebrow;
+      document.getElementById('quote-heading').textContent = data.quoteHeading;
+      document.getElementById('job-type-label').innerHTML = `${data.jobLabel} <span>*</span>`;
+      document.getElementById('size-label').textContent = data.sizeLabel;
+
+      const jobSelect = document.getElementById('job_type');
+      jobSelect.innerHTML = '<option value="" disabled selected>Select a service...</option>' +
+        data.jobs.map(j => `<option>${j}</option>`).join('');
+
+      const sizeSelect = document.getElementById('property_size');
+      sizeSelect.innerHTML = '<option value="" disabled selected>Select size...</option>' +
+        data.sizes.map(s => `<option>${s}</option>`).join('');
+
+      renderPricingRows(industry);
+
+      document.querySelectorAll('.industry-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    /* ── PRICING TABLE ── */
+    function renderPricingRows(industry) {
+      const rows = document.getElementById('pricing-rows');
+      rows.innerHTML = INDUSTRY_DATA[industry].pricing.map((item, i) => `
+        <div class="pricing-row">
+          <span class="pricing-service-name">${item.name}</span>
+          <div class="pricing-input-wrap">
+            <span>$</span>
+            <input class="pricing-input" type="number" min="0" value="${item.value}"
+              id="price-${i}" onchange="updatePrice('${industry}', ${i}, this.value)" />
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updatePrice(industry, index, value) {
+      INDUSTRY_DATA[industry].pricing[index].value = Number(value);
+    }
+
+    function togglePricing() {
+      const table = document.getElementById('pricing-table');
+      const arrow = document.getElementById('pricing-arrow');
+      table.classList.toggle('open');
+      arrow.classList.toggle('open');
+    }
+
+    /* ── STEP NAVIGATION ── */
+    function setStep(n) {
+      document.getElementById('step-1').style.display = n === 1 ? 'block' : 'none';
+      document.getElementById('step-2').style.display = n === 2 ? 'block' : 'none';
+      document.getElementById('step-3').style.display = n === 3 ? 'block' : 'none';
+
+      // industry tabs only visible on steps 1 & 2
+      document.querySelector('.industry-tabs').style.display = n === 3 ? 'none' : 'flex';
+
+      [1,2,3].forEach(i => {
+        const item = document.getElementById(`step-ind-${i}`);
+        item.classList.remove('active','done');
+        if (i < n) item.classList.add('done');
+        if (i === n) item.classList.add('active');
+      });
+
+      [1,2].forEach(i => {
+        const line = document.getElementById(`line-${i}`);
+        line.classList.toggle('done', i < n);
+      });
+    }
+
+    function goToStep2() {
+      const bName = document.getElementById('business_name').value.trim();
+      const err = document.getElementById('config-error');
+      if (!bName) {
+        err.textContent = 'Please enter your business name.';
+        err.style.display = 'block';
+        return;
+      }
+      err.style.display = 'none';
+      setStep(2);
+    }
+
+    function goToStep1() {
+      setStep(1);
+    }
+
+    /* ── FORM SUBMIT ── */
     const form = document.getElementById('estimate-form');
     const formState = document.getElementById('form-state');
     const loadingState = document.getElementById('loading-state');
-    const successState = document.getElementById('success-state');
     const errorMsg = document.getElementById('error-msg');
     const submitBtn = document.getElementById('submit-btn');
 
@@ -515,9 +911,12 @@
       const location = document.getElementById('location').value.trim();
       const description = document.getElementById('description').value.trim();
       const sendCopy = document.getElementById('send-copy').checked;
-      const owner_email = sendCopy ? document.getElementById('owner_email').value.trim() : '';
+      const copy_email = sendCopy ? document.getElementById('copy_email').value.trim() : '';
+      const business_name = document.getElementById('business_name').value.trim();
+      const owner_email = document.getElementById('owner_email').value.trim();
+      const pricing = INDUSTRY_DATA[currentIndustry].pricing;
 
-      if (sendCopy && !owner_email) {
+      if (sendCopy && !copy_email) {
         errorMsg.textContent = 'Please enter your email address to receive a copy.';
         errorMsg.style.display = 'block';
         return;
@@ -532,7 +931,13 @@
         const res = await fetch('/estimate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, job_type, property_size, location, description, owner_email })
+          body: JSON.stringify({
+            name, email, job_type, property_size, location, description,
+            owner_email: copy_email || owner_email,
+            industry: currentIndustry,
+            business_name,
+            pricing
+          })
         });
 
         const data = await res.json();
@@ -540,7 +945,8 @@
         if (data.success) {
           loadingState.style.display = 'none';
           document.getElementById('confirm-email').textContent = email;
-          successState.style.display = 'block';
+          document.getElementById('confirm-industry').textContent = currentIndustry;
+          setStep(3);
         } else {
           throw new Error(data.error || 'Something went wrong. Please try again.');
         }
@@ -554,7 +960,7 @@
       }
     });
 
-    function toggleOwnerEmail() {
+    function toggleCustomerCopy() {
       const checked = document.getElementById('send-copy').checked;
       document.getElementById('owner-email-field').style.display = checked ? 'block' : 'none';
     }
@@ -564,14 +970,18 @@
       document.getElementById('theme-toggle').textContent = isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode';
     }
 
-    function resetForm() {
+    function resetAll() {
       form.reset();
       document.getElementById('owner-email-field').style.display = 'none';
-      successState.style.display = 'none';
-      formState.style.display = 'block';
       submitBtn.disabled = false;
       submitBtn.textContent = 'Get My Free Estimate →';
+      setStep(1);
     }
+
+    /* ── INIT ── */
+    renderPricingRows('landscaping');
+    switchIndustry('landscaping', document.querySelector('.industry-tab.active'));
+    setStep(1);
   </script>
 </body>
 </html>

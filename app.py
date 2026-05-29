@@ -32,14 +32,110 @@ def estimate():
     description = data.get("description", "").strip()
     location = data.get("location", "").strip()
     owner_email = data.get("owner_email", "").strip()
+    business_name = data.get("business_name", "").strip()
+    pricing = data.get("pricing", [])
 
     if not name or not email or not job_type or not description:
         return jsonify({"error": "Please fill in all required fields."}), 400
 
-    prompt = f"""You are a professional landscaping estimator with 15 years of experience.
-Generate a detailed, professional estimate for the following job. Be specific with price ranges based on typical North American market rates.
-Do NOT ask clarifying questions. Work with what is provided and make reasonable assumptions where needed.
+    pricing_context = ""
+    if pricing:
+        lines = "\n".join(f"  - {p['name']}: ${p['value']} minimum" for p in pricing if isinstance(p, dict))
+        pricing_context = f"\nBusiness Pricing (use these as your floor rates when building the estimate):\n{lines}\n"
 
+    industry = data.get("industry", "landscaping").strip().lower()
+
+    if industry == "roofing":
+        prompt = f"""You are a professional roofing contractor and estimator with 15 years of experience.
+Generate a detailed, professional roofing estimate based on typical North American market rates.
+Do NOT ask clarifying questions. Work with what is provided and make reasonable assumptions where needed.
+Use roofing industry terminology: roof squares (1 square = 100 sq ft), pitch, layers, shingle type, underlayment, flashing, drip edge, tear-off.
+{pricing_context}
+Business: {business_name if business_name else 'Not specified'}
+Client: {name}
+Service Type: {job_type}
+Roof Size: {property_size if property_size else 'Not specified — assume average residential (20–25 squares)'}
+Location: {location if location else 'Not specified'}
+Job Description: {description}
+
+Format the estimate exactly like this — use plain text, no markdown asterisks:
+
+ROOFING ESTIMATE
+Prepared for: {name}
+
+SCOPE OF WORK
+[Detailed breakdown — include estimated squares, pitch assumption, layers, tear-off if needed, 3-5 sentences]
+
+ESTIMATED INVESTMENT
+Labour: $X – $X
+Materials (shingles, underlayment, flashing, etc.): $X – $X
+Disposal & Haul-Away: $X – $X
+TOTAL: $X – $X
+
+PROJECT TIMELINE
+[Realistic timeframe — most residential roofs are 1-2 days]
+
+WHATS INCLUDED
+- [Item]
+- [Item]
+- [Item]
+- [Item]
+
+WARRANTY
+[Standard workmanship and manufacturer warranty details]
+
+NEXT STEPS
+Book a free 15-minute consultation call to confirm the exact scope, answer any questions, and get you on the schedule.
+
+Keep it confident, specific, and professional. No filler sentences."""
+
+    elif industry == "pressure washing":
+        prompt = f"""You are a professional pressure washing contractor and estimator with 15 years of experience.
+Generate a detailed, professional pressure washing estimate based on typical North American market rates.
+Do NOT ask clarifying questions. Work with what is provided and make reasonable assumptions where needed.
+Use pressure washing industry terminology: PSI, GPM, surface type (concrete, vinyl, wood, brick), soft wash vs pressure wash, pre-treatment, dwell time, linear footage for fences/gutters.
+{pricing_context}
+Business: {business_name if business_name else 'Not specified'}
+Client: {name}
+Service Type: {job_type}
+Surface Area: {property_size if property_size else 'Not specified — assume average residential'}
+Location: {location if location else 'Not specified'}
+Job Description: {description}
+
+Format the estimate exactly like this — use plain text, no markdown asterisks:
+
+PRESSURE WASHING ESTIMATE
+Prepared for: {name}
+
+SCOPE OF WORK
+[Detailed breakdown — include surface type, method (soft wash or pressure wash), PSI used, any pre-treatment needed, 3-5 sentences]
+
+ESTIMATED INVESTMENT
+Labour: $X – $X
+Cleaning Solutions & Materials: $X – $X
+TOTAL: $X – $X
+
+PROJECT TIMELINE
+[Realistic timeframe — most residential jobs are half day to full day]
+
+WHATS INCLUDED
+- [Item]
+- [Item]
+- [Item]
+- [Item]
+
+NEXT STEPS
+Book a free 15-minute consultation call to confirm the exact scope, answer any questions, and get you on the schedule.
+
+Keep it confident, specific, and professional. No filler sentences."""
+
+    else:
+        prompt = f"""You are a professional landscaping estimator with 15 years of experience.
+Generate a detailed, professional landscaping estimate based on typical North American market rates.
+Do NOT ask clarifying questions. Work with what is provided and make reasonable assumptions where needed.
+Use landscaping industry terminology: turf area, edging, beds, mulch depth, seasonal timing, visit frequency (weekly/bi-weekly/monthly) where relevant.
+{pricing_context}
+Business: {business_name if business_name else 'Not specified'}
 Client: {name}
 Job Type: {job_type}
 Property Size: {property_size if property_size else 'Not specified — assume average residential'}
@@ -52,12 +148,13 @@ LANDSCAPING ESTIMATE
 Prepared for: {name}
 
 SCOPE OF WORK
-[Detailed breakdown of exactly what will be done, 3-5 sentences]
+[Detailed breakdown — include turf area assumptions, frequency if maintenance work, specific areas addressed, 3-5 sentences]
 
 ESTIMATED INVESTMENT
 Labour: $X – $X
 Materials: $X – $X
 TOTAL: $X – $X
+[If recurring: Per Visit: $X | Frequency: weekly/bi-weekly/monthly]
 
 PROJECT TIMELINE
 [Realistic start and completion timeframe]
@@ -82,7 +179,7 @@ Keep it confident, specific, and professional. No filler sentences."""
     estimate_text = message.content[0].text
 
     try:
-        send_estimate_email(name, email, job_type, estimate_text, owner_email)
+        send_estimate_email(name, email, job_type, estimate_text, owner_email, industry)
     except Exception as e:
         print(f"EMAIL ERROR: {e}")
         return jsonify({"error": f"Estimate generated but email failed: {str(e)}"}), 500
@@ -90,9 +187,10 @@ Keep it confident, specific, and professional. No filler sentences."""
     return jsonify({"success": True})
 
 
-def send_estimate_email(name, email, job_type, estimate_text, owner_email=""):
+def send_estimate_email(name, email, job_type, estimate_text, owner_email="", industry="landscaping"):
+    industry_label = {"roofing": "Roofing", "pressure washing": "Pressure Washing"}.get(industry.lower(), "Landscaping")
     msg = MIMEMultipart("alternative")
-    msg["Subject"] = f"Your Free Landscaping Estimate — {job_type}"
+    msg["Subject"] = f"Your Free {industry_label} Estimate — {job_type}"
     msg["From"] = SENDER_EMAIL
     msg["To"] = email
 
@@ -163,7 +261,7 @@ def send_estimate_email(name, email, job_type, estimate_text, owner_email=""):
 
         if owner_email:
             copy_msg = MIMEMultipart("alternative")
-            copy_msg["Subject"] = f"[Copy] Estimate sent to {name} — {job_type}"
+            copy_msg["Subject"] = f"[Copy] {industry_label} estimate sent to {name} — {job_type}"
             copy_msg["From"] = SENDER_EMAIL
             copy_msg["To"] = owner_email
             copy_msg.attach(MIMEText(html_body, "html"))
